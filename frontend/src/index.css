@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  /* A soft, airy gradient background */
+  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  color: #1f2937;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-glass backdrop-blur-md border border-glassBorder shadow-lg rounded-2xl;
+  }
+}
