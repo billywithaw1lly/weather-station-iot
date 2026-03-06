@@ -1,194 +1,213 @@
 import React from "react";
 import {
-    LineChart,
-    Line,
-    ResponsiveContainer,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-} from "recharts";
-import { Thermometer, Droplets, Wind } from "lucide-react";
+    Thermometer,
+    Droplets,
+    Wind,
+    Gauge,
+    Mountain,
+    CloudRain,
+    Activity,
+    ArrowUp,
+    ArrowDown,
+    Hash,
+} from "lucide-react";
 
-// 1. Add isDark to props
-const LiveSummary = ({ dataHistory, isDark }) => {
-    if (!dataHistory || dataHistory.length === 0) {
+const LiveSummary = ({ currentReading, dataHistory }) => {
+    if (!currentReading) {
         return (
-            <div className="flex justify-center items-center h-64 text-slate-500 font-medium">
-                <span className="animate-pulse">
-                    Awaiting telemetry data...
-                </span>
+            <div className="flex flex-col justify-center items-center h-96 text-slate-500 font-medium">
+                <Activity className="animate-pulse mb-4" size={48} />
+                <span>Initializing SkyNet Sensors...</span>
             </div>
         );
     }
 
-    const getAQIColor = (value) => {
-        if (value <= 50) return "#00b050"; // Good (Green)
-        if (value <= 100) return "#92d050"; // Satisfactory (Light Green)
-        if (value <= 200) return "#ffff00"; // Moderate (Yellow)
-        if (value <= 300) return "#ffc000"; // Poor (Orange)
-        if (value <= 400) return "#ff0000"; // Very Poor (Red)
-        return "#c00000"; // Severe (Maroon)
+    // Helper to calculate 24h stats
+    const getStats = (key) => {
+        if (!dataHistory || dataHistory.length === 0)
+            return { max: "--", min: "--", avg: "--" };
+
+        const values = dataHistory
+            .map((item) => item[key])
+            .filter((v) => v !== undefined);
+        if (values.length === 0) return { max: "--", min: "--", avg: "--" };
+
+        const max = Math.max(...values);
+        const min = Math.min(...values);
+        const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(
+            1,
+        );
+
+        return { max, min, avg };
     };
 
-    const currentData = dataHistory[dataHistory.length - 1];
-
-    const CustomTooltip = ({ active, payload, label }) => {
-        if (active && payload && payload.length) {
-            return (
-                <div className="bg-slate-900 border border-slate-700 p-3 rounded-lg shadow-xl">
-                    <p className="text-slate-400 text-xs mb-1 font-medium">{`Time: ${label || "Recent"}`}</p>
-                    <p className="text-white font-bold text-lg">
-                        {`${payload[0].value} `}
-                        <span className="text-sm text-slate-300 font-normal">
-                            {payload[0].name === "airQuality" ? "PPM" : ""}
-                        </span>
-                    </p>
-                </div>
-            );
-        }
-        return null;
-    };
-
-    const MetricCard = ({
+    // 1. Updated LiveCard with Vertical Stats
+    const LiveCard = ({
         title,
         value,
         unit,
         icon: Icon,
-        dataKey,
         color,
-        isAQI,
+        subtext,
+        dataKey,
     }) => {
-        // 2. Logic for dynamic colors based on isDark prop
-        const aqiLineColor = isDark ? "#f8fafc" : "#0f172a"; // White in dark, Black in light
-        const axisColor = isDark ? "#94a3b8" : "#64748b";
-        const gridColor = isDark ? "#475569" : "#cbd5e1";
+        const stats = getStats(dataKey);
 
         return (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col h-[400px] w-full transition-colors duration-300">
-                <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center gap-3">
+            // Changed layout to flex-row and set a fixed, larger height
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl transition-all flex flex-row h-[200px] gap-6">
+                {/* A. MAIN LIVE DATA COLUMN (Left) */}
+                <div className="flex-grow flex flex-col">
+                    <div className="flex justify-between items-start mb-4">
                         <div
-                            className="p-2 rounded-lg bg-opacity-10"
+                            className="p-3 rounded-2xl bg-opacity-10"
                             style={{
-                                backgroundColor:
-                                    isAQI && !isDark
-                                        ? "#0f172a20"
-                                        : `${color}20`,
-                                color: isAQI && !isDark ? "#0f172a" : color,
+                                backgroundColor: `${color}20`,
+                                color: color,
                             }}
                         >
-                            <Icon size={24} />
+                            <Icon size={28} />
                         </div>
-                        <h3 className="font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                            {subtext}
+                        </span>
+                    </div>
+
+                    <div className="flex-grow flex flex-col justify-center">
+                        <h3 className="text-slate-500 dark:text-slate-400 font-bold text-xs uppercase mb-1">
                             {title}
                         </h3>
-                    </div>
-                    <div className="text-right">
-                        <span className="text-3xl font-bold text-slate-900 dark:text-white">
-                            {value !== undefined ? value : "--"}
-                        </span>
-                        <span className="text-slate-500 ml-1 font-medium">
-                            {unit}
-                        </span>
+                        <div className="flex items-baseline gap-1">
+                            {/* Adjusted size slightly for the new 6-card layout */}
+                            <span className="text-5xl font-black tracking-tighter dark:text-white">
+                                {value}
+                            </span>
+                            <span className="text-xl font-bold text-slate-400">
+                                {unit}
+                            </span>
+                        </div>
                     </div>
                 </div>
 
-                <div className="flex-grow w-full h-full min-h-0">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart
-                            data={dataHistory}
-                            margin={{
-                                top: 10,
-                                right: 20,
-                                left: 10,
-                                bottom: 20,
-                            }}
-                        >
-                            <CartesianGrid
-                                strokeDasharray="3 3"
-                                stroke={gridColor}
-                                opacity={0.2}
-                                vertical={false}
-                            />
-                            <XAxis
-                                dataKey="timestamp"
-                                stroke={axisColor}
-                                fontSize={11}
-                                tickMargin={12}
-                                minTickGap={30}
-                                interval="preserveStartEnd"
-                            />
-                            <YAxis
-                                domain={["auto", "auto"]}
-                                stroke={axisColor}
-                                fontSize={11}
-                                width={50}
-                                tickMargin={8}
-                                tickFormatter={(tick) => `${tick}${unit}`}
-                            />
-                            <Tooltip content={<CustomTooltip />} />
-                            <Line
-                                type="monotone"
-                                dataKey={dataKey}
-                                // 3. Apply the dynamic line color
-                                stroke={isAQI ? aqiLineColor : color}
-                                strokeWidth={2}
-                                dot={(props) => {
-                                    const { cx, cy, payload } = props;
-                                    const dotColor = isAQI
-                                        ? getAQIColor(payload[dataKey])
-                                        : "#fff";
-                                    return (
-                                        <circle
-                                            cx={cx}
-                                            cy={cy}
-                                            r={3.5}
-                                            fill={dotColor}
-                                            // 4. Dot border flips to contrast the line
-                                            stroke={isDark ? "#fff" : "#000"}
-                                            strokeWidth={1}
-                                        />
-                                    );
-                                }}
-                                isAnimationActive={false}
-                            />
-                        </LineChart>
-                    </ResponsiveContainer>
+                {/* B. VERTICAL STATS COLUMN (Right) */}
+                <div className="w-[80px] flex flex-col justify-between pt-1 border-l border-slate-100 dark:border-slate-800 pl-6 h-full">
+                    {/* Max */}
+                    <div className="flex flex-col items-center">
+                        <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 uppercase">
+                            <ArrowUp size={10} /> Max
+                        </span>
+                        <span className="text-xs font-semibold dark:text-slate-200">
+                            {stats.max}
+                            {unit}
+                        </span>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-px w-full bg-slate-100 dark:bg-slate-800" />
+
+                    {/* Min */}
+                    <div className="flex flex-col items-center">
+                        <span className="flex items-center gap-1 text-[9px] font-bold text-orange-500 uppercase">
+                            <ArrowDown size={10} /> Min
+                        </span>
+                        <span className="text-xs font-semibold dark:text-slate-200">
+                            {stats.min}
+                            {unit}
+                        </span>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-px w-full bg-slate-100 dark:bg-slate-800" />
+
+                    {/* Avg */}
+                    <div className="flex flex-col items-center">
+                        <span className="flex items-center gap-1 text-[9px] font-bold text-sky-500 uppercase">
+                            <Hash size={10} /> Avg
+                        </span>
+                        <span className="text-xs font-semibold dark:text-slate-200">
+                            {stats.avg}
+                            {unit}
+                        </span>
+                    </div>
                 </div>
             </div>
         );
     };
 
     return (
-        <div className="p-4 md:p-6 w-full flex justify-center">
-            <div className="grid grid-cols-1 gap-6 w-full max-w-7xl">
-                <MetricCard
+        <div className="p-6 md:p-10 max-w-7xl mx-auto w-full">
+            <header className="mb-12">
+                <h1 className="text-4xl font-black dark:text-white tracking-tight">
+                    SkyNet Live Summary
+                </h1>
+                <p className="text-slate-500 font-medium">
+                    Instant telemetry and 24h statistics for station STN-MOCK-01
+                </p>
+            </header>
+
+            {/* Layout adapted for 6 cards (3-column grid) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <LiveCard
                     title="Temperature"
-                    value={currentData.temp}
+                    value={currentReading.temp}
                     unit="°C"
                     icon={Thermometer}
-                    dataKey="temp"
                     color="#f97316"
+                    subtext="Thermal"
+                    dataKey="temp"
                 />
-                <MetricCard
+                <LiveCard
                     title="Humidity"
-                    value={currentData.humidity}
+                    value={currentReading.humidity}
                     unit="%"
                     icon={Droplets}
-                    dataKey="humidity"
                     color="#0ea5e9"
+                    subtext="Atmospheric"
+                    dataKey="humidity"
                 />
-                <MetricCard
+                <LiveCard
+                    title="Pressure"
+                    value={currentReading.pressure}
+                    unit="hPa"
+                    icon={Gauge}
+                    color="#8b5cf6"
+                    subtext="Barometric"
+                    dataKey="pressure"
+                />
+                <LiveCard
+                    title="Altitude"
+                    value={currentReading.altitude}
+                    unit="m"
+                    icon={Mountain}
+                    color="#ec4899"
+                    subtext="Elevation"
+                    dataKey="altitude"
+                />
+                <LiveCard
                     title="Air Quality"
-                    value={currentData.airQuality}
-                    unit=" PPM"
+                    value={currentReading.airQuality}
+                    unit="PPM"
                     icon={Wind}
+                    color="#10b981"
+                    subtext="Environment"
                     dataKey="airQuality"
-                    color="#ffffff"
-                    isAQI={true}
+                />
+                <LiveCard
+                    title="Rain Level"
+                    value={currentReading.rain}
+                    unit="Raw"
+                    icon={CloudRain}
+                    color="#64748b"
+                    subtext="Precipitation"
+                    dataKey="rain"
                 />
             </div>
+
+            <footer className="mt-16 p-4 rounded-3xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-center">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+                    Last Packet Received: {currentReading.timestamp}
+                </p>
+            </footer>
         </div>
     );
 };

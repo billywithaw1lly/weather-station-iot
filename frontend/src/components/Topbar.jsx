@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import SkyNetLogo from "./SkyNetLogo";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, ChevronDown } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 const Topbar = ({ isConnected, isDark, setIsDark }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const location = useLocation();
 
     return (
         <div
@@ -84,111 +86,55 @@ const Topbar = ({ isConnected, isDark, setIsDark }) => {
             </div>
 
             {/* div 2 center tabs */}
-            <div
-                className="hidden 
-            md:flex 
-            items-center 
-            p-1 
-            bg-slate-100 
-            dark:bg-slate-800/50 
-            rounded-xl border 
-            border-slate-200 dark:border-slate-700/50"
-            >
-                <button
-                    className="px-5 py-2 
-                rounded-lg 
-                text-sm 
-                font-semibold 
-                bg-white dark:bg-slate-700 
-                text-slate-800 dark:text-white 
-                shadow-sm 
-                transition-all"
+            <div className="hidden md:flex items-center p-1 bg-slate-100 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700/50">
+                {/* 1. Live Summary Link */}
+                <Link
+                    to="/"
+                    className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        location.pathname === "/"
+                            ? "bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm"
+                            : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                    }`}
                 >
                     Live Summary
-                </button>
+                </Link>
 
+                {/* 2. Component Analytics (Now in the Middle) */}
                 <div className="relative group">
-                    <button
-                        className="flex 
-                    items-center 
-                    ap-1 
-                    px-5 py-2 
-                    rounded-lg 
-                    text-sm 
-                    font-medium 
-                    text-slate-500 dark:text-slate-400 
-                    hover:text-slate-800 dark:hover:text-slate-200 
-                    transition-all"
-                    >
+                    <button className="flex items-center gap-1 px-5 py-2 rounded-lg text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all">
                         Component Analytics
                         <ChevronDown
                             size={16}
-                            className="transition-transform 
-                            group-hover:rotate-180"
+                            className="transition-transform group-hover:rotate-180"
                         />
                     </button>
 
-                    <div
-                        className="absolute 
-                    top-full 
-                    left-0 
-                    mt-2 w-56 
-                    opacity-0 
-                    invisible 
-                    group-hover:opacity-100 
-                    group-hover:visible 
-                    transition-all 
-                    duration-200 z-50"
-                    >
-                        <div
-                            className="p-2 
-                        bg-white dark:bg-slate-800 
-                        rounded-xl shadow-xl 
-                        border border-slate-100 dark:border-slate-700 
-                        flex flex-col 
-                        gap-1"
-                        >
-                            <button
-                                className="text-left 
-                            px-4 py-2.5 
-                            rounded-lg 
-                            text-sm font-medium 
-                            text-slate-600 dark:text-slate-300 
-                            hover:bg-slate-50 dark:hover:bg-slate-700 
-                            hover:text-sky-500 transition-colors"
-                            >
+                    <div className="absolute top-full left-0 mt-2 w-56 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                        <div className="p-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-100 dark:border-slate-700 flex flex-col gap-1">
+                            <button className="text-left px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-sky-500 transition-colors">
                                 Atmospheric Dynamics
                             </button>
-                            <button
-                                className="text-left 
-                            px-4 py-2.5 
-                            rounded-lg 
-                            text-sm font-medium 
-                            text-slate-600 dark:text-slate-300 
-                            hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-emerald-500 
-                            transition-colors"
-                            >
+                            <button className="text-left px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-emerald-500 transition-colors">
                                 Thermal Comfort
                             </button>
-                            <button
-                                className="text-left 
-                            px-4 py-2.5 
-                            rounded-lg 
-                            text-sm 
-                            font-medium 
-                            text-slate-600 dark:text-slate-300 
-                            hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-500 
-                            transition-colors"
-                            >
+                            <button className="text-left px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-indigo-500 transition-colors">
                                 Environmental Quality
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <button className="px-5 py-2 rounded-lg text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-all">
+                {/* 3. 24h History Link */}
+                <Link
+                    to="/history"
+                    className={`px-5 py-2 rounded-lg text-sm font-semibold transition-all ${
+                        location.pathname === "/history"
+                            ? "bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm"
+                            : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
+                    }`}
+                >
                     24h History
-                </button>
+                </Link>
             </div>
 
             {/* div 3 modes and menu */}
@@ -258,89 +204,49 @@ const Topbar = ({ isConnected, isDark, setIsDark }) => {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="absolute 
-                        top-full 
-                        left-0 w-full 
-                        bg-white dark:bg-slate-900 
-                        border-b border-slate-100 dark:border-slate-800 
-                        shadow-xl md:hidden 
-                        flex flex-col 
-                        p-4 gap-2"
+                        className="absolute top-full left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 shadow-xl md:hidden flex flex-col p-4 gap-2"
                     >
-                        <button
-                            className="text-left
-                        px-4 py-3 
-                        rounded-lg 
-                        text-sm 
-                        font-semibold 
-                        bg-slate-100 dark:bg-slate-800 
-                        text-slate-800 dark:text-white"
+                        {/* 1. Updated Live Summary Link */}
+                        <Link
+                            to="/"
+                            onClick={() => setIsMobileMenuOpen(false)} // Closes menu after clicking
+                            className={`text-left px-4 py-3 rounded-lg text-sm font-semibold transition-all ${
+                                location.pathname === "/"
+                                    ? "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white"
+                                    : "text-slate-600 dark:text-slate-300"
+                            }`}
                         >
                             Live Summary
-                        </button>
+                        </Link>
 
-                        <div
-                            className="px-4 py-2 
-                        text-xs 
-                        font-bold 
-                        text-slate-400 
-                        uppercase 
-                        tracking-wider 
-                        mt-2"
-                        >
+                        <div className="px-4 py-2 text-xs font-bold text-slate-400 uppercase tracking-wider mt-2">
                             Component Analytics
                         </div>
-                        <button
-                            className="text-left 
-                        px-4 py-2 
-                        rounded-lg 
-                        text-sm 
-                        font-medium 
-                        text-slate-600 dark:text-slate-300 
-                        hover:bg-slate-50 dark:hover:bg-slate-800"
-                        >
+
+                        <button className="text-left px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
                             Atmospheric Dynamics
                         </button>
-                        <button
-                            className="text-left 
-                        px-4 py-2 
-                        rounded-lg
-                        text-sm 
-                        font-medium 
-                        text-slate-600 dark:text-slate-300 
-                        hover:bg-slate-50 dark:hover:bg-slate-800"
-                        >
+                        <button className="text-left px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
                             Thermal Comfort
                         </button>
-                        <button
-                            className="text-left 
-                        px-4 py-2 
-                        rounded-lg 
-                        text-sm 
-                        font-medium 
-                        text-slate-600 dark:text-slate-300 
-                        hover:bg-slate-50 dark:hover:bg-slate-800"
-                        >
+                        <button className="text-left px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
                             Environmental Quality
                         </button>
 
-                        <div
-                            className="h-px 
-                        bg-slate-100 dark:bg-slate-800 
-                        my-2"
-                        ></div>
+                        <div className="h-px bg-slate-100 dark:bg-slate-800 my-2"></div>
 
-                        <button
-                            className="text-left 
-                        px-4 py-3 
-                        rounded-lg 
-                        text-sm 
-                        font-medium 
-                        text-slate-600 dark:text-slate-300 
-                        hover:bg-slate-50 dark:hover:bg-slate-800"
+                        {/* 2. Updated 24h History Link */}
+                        <Link
+                            to="/history"
+                            onClick={() => setIsMobileMenuOpen(false)} // Closes menu after clicking
+                            className={`text-left px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                                location.pathname === "/history"
+                                    ? "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-white"
+                                    : "text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+                            }`}
                         >
                             24h History
-                        </button>
+                        </Link>
                     </motion.div>
                 )}
             </AnimatePresence>
