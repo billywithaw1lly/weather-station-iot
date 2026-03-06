@@ -12,21 +12,21 @@ import {
     Hash,
 } from "lucide-react";
 
-const LiveSummary = ({ currentReading, dataHistory }) => {
+const LiveSummary = ({ currentReading, activeStation, dataHistory }) => {
     if (!currentReading) {
         return (
             <div className="flex flex-col justify-center items-center h-96 text-slate-500 font-medium">
                 <Activity className="animate-pulse mb-4" size={48} />
-                <span>Initializing SkyNet Sensors...</span>
+                <span>
+                    Station {activeStation} is offline or initializing...
+                </span>
             </div>
         );
     }
 
-    // Helper to calculate 24h stats
     const getStats = (key) => {
         if (!dataHistory || dataHistory.length === 0)
             return { max: "--", min: "--", avg: "--" };
-
         const values = dataHistory
             .map((item) => item[key])
             .filter((v) => v !== undefined);
@@ -37,11 +37,9 @@ const LiveSummary = ({ currentReading, dataHistory }) => {
         const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(
             1,
         );
-
         return { max, min, avg };
     };
 
-    // 1. Updated LiveCard with Vertical Stats
     const LiveCard = ({
         title,
         value,
@@ -54,9 +52,7 @@ const LiveSummary = ({ currentReading, dataHistory }) => {
         const stats = getStats(dataKey);
 
         return (
-            // Changed layout to flex-row and set a fixed, larger height
             <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl transition-all flex flex-row h-[200px] gap-6">
-                {/* A. MAIN LIVE DATA COLUMN (Left) */}
                 <div className="flex-grow flex flex-col">
                     <div className="flex justify-between items-start mb-4">
                         <div
@@ -78,7 +74,6 @@ const LiveSummary = ({ currentReading, dataHistory }) => {
                             {title}
                         </h3>
                         <div className="flex items-baseline gap-1">
-                            {/* Adjusted size slightly for the new 6-card layout */}
                             <span className="text-5xl font-black tracking-tighter dark:text-white">
                                 {value}
                             </span>
@@ -89,9 +84,7 @@ const LiveSummary = ({ currentReading, dataHistory }) => {
                     </div>
                 </div>
 
-                {/* B. VERTICAL STATS COLUMN (Right) */}
                 <div className="w-[80px] flex flex-col justify-between pt-1 border-l border-slate-100 dark:border-slate-800 pl-6 h-full">
-                    {/* Max */}
                     <div className="flex flex-col items-center">
                         <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-500 uppercase">
                             <ArrowUp size={10} /> Max
@@ -101,11 +94,7 @@ const LiveSummary = ({ currentReading, dataHistory }) => {
                             {unit}
                         </span>
                     </div>
-
-                    {/* Divider */}
                     <div className="h-px w-full bg-slate-100 dark:bg-slate-800" />
-
-                    {/* Min */}
                     <div className="flex flex-col items-center">
                         <span className="flex items-center gap-1 text-[9px] font-bold text-orange-500 uppercase">
                             <ArrowDown size={10} /> Min
@@ -115,11 +104,7 @@ const LiveSummary = ({ currentReading, dataHistory }) => {
                             {unit}
                         </span>
                     </div>
-
-                    {/* Divider */}
                     <div className="h-px w-full bg-slate-100 dark:bg-slate-800" />
-
-                    {/* Avg */}
                     <div className="flex flex-col items-center">
                         <span className="flex items-center gap-1 text-[9px] font-bold text-sky-500 uppercase">
                             <Hash size={10} /> Avg
@@ -141,11 +126,10 @@ const LiveSummary = ({ currentReading, dataHistory }) => {
                     SkyNet Live Summary
                 </h1>
                 <p className="text-slate-500 font-medium">
-                    Instant telemetry and 24h statistics for station STN-MOCK-01
+                    Instant telemetry for station {activeStation}
                 </p>
             </header>
 
-            {/* Layout adapted for 6 cards (3-column grid) */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <LiveCard
                     title="Temperature"

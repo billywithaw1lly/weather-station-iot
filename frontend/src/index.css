@@ -3,16 +3,55 @@
 @tailwind utilities;
 
 body {
-  margin: 0;
-  min-height: 100vh;
-  /* A soft, airy gradient background */
-  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
-  color: #1f2937;
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    /* A soft, airy gradient background */
+    background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+    color: #1f2937;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
 }
 
 @layer utilities {
-  .glass-panel {
-    @apply bg-glass backdrop-blur-md border border-glassBorder shadow-lg rounded-2xl;
-  }
+    .glass-panel {
+        @apply bg-glass backdrop-blur-md border border-glassBorder shadow-lg rounded-2xl;
+    }
+}
+
+/* Custom Scrollbar for Graph Containers (Desktop) */
+.custom-scrollbar::-webkit-scrollbar {
+    height: 6px; /* Slim height for horizontal scroll */
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent; /* Keep the background invisible */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1; /* Light mode color (slate-300) */
+    border-radius: 10px;
+}
+
+/* Dark Mode Override */
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #334155; /* Dark mode color (slate-700) */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; /* Hover effect for better UX */
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
+
+/* --- NEW: Hide scrollbar on Mobile but keep swipe functionality --- */
+@media (max-width: 768px) {
+    .custom-scrollbar::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, and Opera */
+    }
+    .custom-scrollbar {
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
+    }
 }
