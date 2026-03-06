@@ -3,17 +3,8 @@ import SkyNetLogo from "./SkyNetLogo";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, ChevronDown } from "lucide-react";
 
-const Topbar = ({ isConnected }) => {
-    const [isDark, setIsDark] = useState(true);
+const Topbar = ({ isConnected, isDark, setIsDark }) => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-    useEffect(() => {
-        if (isDark) {
-            document.documentElement.classList.add("dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-        }
-    }, [isDark]);
 
     return (
         <div
